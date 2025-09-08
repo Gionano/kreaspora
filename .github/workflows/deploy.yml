@@ -1,6 +1,8 @@
 # Deploy GitHub Pages workflow for Gionano/kreaspora
-# - Adjust the build step(s) to match your project (static output folder, build commands).
-# - This workflow uploads an artifact named `github-pages` and then deploys it with actions/deploy-pages@v3.
+# - Put your static site output into ./public (change OUTPUT_DIR if different)
+# - This workflow builds (if a package.json with "build" exists), uploads an artifact
+#   named `github-pages`, then deploys it in the same workflow run so actions/deploy-pages
+#   can find the artifact (avoids the "Cannot find any run with github.run_id" error).
 name: Deploy to GitHub Pages
 
 on:
@@ -17,69 +19,82 @@ concurrency:
   group: deploy-pages-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  OUTPUT_DIR: public    # change this to ./dist or ./build if your project uses a different folder
+  ARTIFACT_NAME: github-pages
+
 jobs:
   build:
     name: Build site and upload artifact
     runs-on: ubuntu-latest
     outputs:
-      artifact-name: github-pages
+      artifact-name: ${{ env.ARTIFACT_NAME }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Optional Node setup — safe no-op if your repo has no package.json
+      - name: Show run info (for debugging)
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Ref: $GITHUB_REF"
+          echo "Run ID: $GITHUB_RUN_ID"
+          echo "Run Number: $GITHUB_RUN_NUMBER"
+
       - name: Set up Node.js (optional)
+        if: file-exists('package.json')
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
 
       - name: Install dependencies (optional)
-        run: |
-          if [ -f package.json ]; then
-            npm ci
-          else
-            echo "No package.json found — skipping npm install"
-          fi
+        if: file-exists('package.json')
+        run: npm ci
 
-      - name: Build site (adjust to your project)
+      - name: Build site (adjust if you use Hugo/Jekyll/etc.)
         run: |
-          # Common examples:
-          # - For a typical JS site: npm run build
-          # - For Hugo: hugo -D -d public
-          # - For Eleventy: npx @11ty/eleventy --output=public
           if [ -f package.json ] && grep -q "\"build\"" package.json; then
             npm run build
           else
-            echo "No npm build script detected. Replace this step with your project's build command."
+            echo "No npm build script detected. If you use Hugo/Jekyll/other, replace this step with the correct build command."
           fi
 
-      - name: Confirm output directory
+      - name: Ensure output directory exists
         run: |
-          # Default expected output directory is ./public
-          if [ -d ./public ]; then
-            echo "Using ./public as pages output"
+          if [ -d "${{ env.OUTPUT_DIR }}" ]; then
+            echo "Found output directory: ${{ env.OUTPUT_DIR }}"
+            ls -la "${{ env.OUTPUT_DIR }}"
           else
-            echo "Warning: ./public not found. Update the 'path' in the upload step to your build output (e.g. ./dist)"
+            echo "Output directory '${{ env.OUTPUT_DIR }}' not found. Update OUTPUT_DIR or the build step to create it."
+            exit 1
           fi
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public     # <- change this to your build output folder if different (e.g. ./dist)
-          name: github-pages
+          path: ${{ env.OUTPUT_DIR }}
+          name: ${{ env.ARTIFACT_NAME }}
 
   deploy:
     name: Deploy artifact to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Show run info in deploy job (debug)
+        run: |
+          echo "Deploy job run id: $GITHUB_RUN_ID"
+          echo "This deploy runs in the same workflow run as the build job (needs: build)."
+
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: github-pages
+          artifact_name: ${{ needs.build.outputs.artifact-name }}
           timeout: 600000
           error_count: 10
           reporting_interval: 5000
           preview: false
+
+# Helper: file-exists condition function (works in job steps)
+# Note: the `if: file-exists('package.json')` conditions above rely on the runner's support for that expression.
+# If your runner doesn't support it, replace conditional steps with explicit shell checks inside `run` blocks.
