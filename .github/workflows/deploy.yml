@@ -30,9 +30,10 @@ jobs:
       - name: Build with Next.js
         run: npm run build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          path: ./out
+          name: my-artifact
+          path: ./build
 
   deploy:
     environment:

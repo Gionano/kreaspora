@@ -1,10 +1,14 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import Image from 'next/image';
 import { programs } from '@/data/landingPageData';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 
-const Programs: React.FC = () => {
+interface ProgramsProps { }
+
+const Programs = forwardRef<HTMLDivElement, ProgramsProps>(({}, ref) => {
   const targetRef = useRef<HTMLDivElement>(null);
+  useImperativeHandle(ref, () => targetRef.current!, []);
+
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ['start start', 'end end'],
@@ -97,6 +101,8 @@ const Programs: React.FC = () => {
       </div>
     </div>
   );
-};
+});
+
+Programs.displayName = 'Programs';
 
 export default Programs;
