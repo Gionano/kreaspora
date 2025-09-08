@@ -1,31 +1,76 @@
+# Deploy GitHub Pages workflow for Gionano/kreaspora
+# - Adjust the build step(s) to match your project (static output folder, build commands).
+# - This workflow uploads an artifact named `github-pages` and then deploys it with actions/deploy-pages@v3.
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: deploy-pages-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
+    name: Build site and upload artifact
     runs-on: ubuntu-latest
+    outputs:
+      artifact-name: github-pages
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Build static site
+      # Optional Node setup — safe no-op if your repo has no package.json
+      - name: Set up Node.js (optional)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies (optional)
         run: |
-          # your build command here
+          if [ -f package.json ]; then
+            npm ci
+          else
+            echo "No package.json found — skipping npm install"
+          fi
 
-      - name: Upload artifact
+      - name: Build site (adjust to your project)
+        run: |
+          # Common examples:
+          # - For a typical JS site: npm run build
+          # - For Hugo: hugo -D -d public
+          # - For Eleventy: npx @11ty/eleventy --output=public
+          if [ -f package.json ] && grep -q "\"build\"" package.json; then
+            npm run build
+          else
+            echo "No npm build script detected. Replace this step with your project's build command."
+          fi
+
+      - name: Confirm output directory
+        run: |
+          # Default expected output directory is ./public
+          if [ -d ./public ]; then
+            echo "Using ./public as pages output"
+          else
+            echo "Warning: ./public not found. Update the 'path' in the upload step to your build output (e.g. ./dist)"
+          fi
+
+      - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: ./public     # <- change this to your build output folder if different (e.g. ./dist)
           name: github-pages
 
   deploy:
+    name: Deploy artifact to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -34,3 +79,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
+          timeout: 600000
+          error_count: 10
+          reporting_interval: 5000
+          preview: false
