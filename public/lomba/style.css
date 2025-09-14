@@ -1,0 +1,348 @@
+html {
+  overflow-y: scroll;
+}
+
+/* From globals.css */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+/* Mimicking dark mode from globals.css */
+body.dark-mode {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: #212529; /* Dark text for readability */
+  background-color: #F8F9FA; /* Off-white background */
+  font-family: sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Header & Navbar Styles */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 40;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar {
+    max-width: 1152px; /* max-w-7xl */
+    margin: 0 auto;
+    padding: 0 1rem; /* px-4 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem; /* h-16 */
+}
+
+.nav-logo a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* gap-3 */
+    text-decoration: none;
+}
+
+.nav-logo img {
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px; /* rounded-full */
+}
+
+.nav-logo span {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700; /* font-bold */
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-image: linear-gradient(to right, #4fd1c5, #38a169); /* from-teal-400 to-green-500 */
+}
+
+.nav-menu {
+    display: none; /* hidden on mobile */
+}
+
+@media (min-width: 768px) { /* md:flex */
+    .nav-menu {
+        display: flex;
+        gap: 2rem; /* space-x-8 */
+    }
+}
+
+.nav-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-menu a {
+    color: #D1D5DB; /* text-gray-300 */
+    text-decoration: none;
+    font-weight: 500; /* font-medium */
+    transition: all 0.3s;
+}
+
+.nav-menu a:hover {
+    color: #4fd1c5; /* hover:text-teal-300 */
+    transform: scale(1.1);
+}
+
+.mobile-menu-button {
+    display: block; /* hidden on desktop */
+}
+
+@media (min-width: 768px) { /* md:hidden */
+    .mobile-menu-button {
+        display: none;
+    }
+}
+
+
+/* Footer Styles */
+.footer {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 3rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #6B7280; /* text-gray-500 */
+}
+
+.footer-content {
+    max-width: 1152px; /* max-w-6xl */
+    margin: 0 auto;
+    text-align: center;
+}
+
+.sponsors {
+    margin-bottom: 2.5rem;
+}
+
+.sponsors h3 {
+    font-size: 1.125rem; /* text-lg */
+    color: #9CA3AF; /* text-gray-400 */
+    margin-bottom: 1.5rem;
+}
+
+.sponsor-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.sponsor-logos img {
+    height: 3rem; /* h-12 */
+    width: auto;
+    filter: grayscale(1);
+    opacity: 0.7;
+    transition: all 0.3s;
+}
+
+.sponsor-logos img:hover {
+    filter: grayscale(0);
+    opacity: 1;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+}
+
+/* Lomba Section Styles */
+.lomba-container {
+  width: 100%;
+}
+
+.lomba-main-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  padding-top: 3rem;
+}
+
+.lomba-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 15rem auto; /* Increased margin for more scroll space */
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+.lomba-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4rem;
+}
+
+/* The animated visual block */
+.lomba-visual-wrapper {
+  position: relative;
+  flex: 1.5;
+  overflow: hidden;
+  /* JavaScript will control transform and opacity */
+}
+
+/* The static text block */
+.lomba-text {
+  flex: 1;
+  padding: 0 2rem;
+}
+
+@media (min-width: 769px) {
+  .lomba-text {
+    position: sticky;
+    top: 6rem;
+  }
+
+  .lomba-text.is-sticky {
+    background-color: rgba(248, 249, 250, 0.8);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-radius: 8px;
+  }
+}
+
+/* Decorative background element */
+.lomba-visual-wrapper::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  z-index: -1;
+  /* JavaScript will control transform */
+}
+
+/* --- Alternating Pattern --- */
+.lomba-section:nth-of-type(odd) .lomba-content {
+  flex-direction: row;
+}
+.lomba-section:nth-of-type(even) .lomba-content {
+  flex-direction: row-reverse;
+}
+
+/* Position the ::before element differently for odd and even sections */
+.lomba-visual-wrapper::before {
+    transform: rotate(var(--rotation, 0deg)); /* Use variable from JS, fallback to 0 */
+}
+
+.lomba-section:nth-of-type(odd) .lomba-visual-wrapper::before {
+  top: -20px;
+  left: -20px;
+}
+
+.lomba-section:nth-of-type(even) .lomba-visual-wrapper::before {
+  bottom: -20px;
+  right: -20px;
+}
+
+/* --- Content Styling --- */
+.lomba-image {
+    padding: 1rem;
+    border-radius: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.lomba-image img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.lomba-text h3 {
+  margin-top: 0;
+  font-size: 2.2rem;
+}
+
+.lomba-text p {
+  margin-bottom: 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .lomba-section {
+    margin: 6rem auto; /* Reduce vertical margin */
+  }
+
+  .lomba-content {
+    flex-direction: column !important; /* Stack image and text, !important to override inline-style-like specificity of nth-child */
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .lomba-text {
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  .lomba-text h3 {
+    font-size: 1.8rem; /* Reduce heading size */
+  }
+
+  .lomba-visual-wrapper {
+    flex: none;
+    width: 90%;
+  }
+}
+
+/* --- Mobile Menu --- */
+.mobile-menu-panel {
+  position: fixed;
+  top: 4rem; /* Below the header */
+  left: 0;
+  width: 50%; /* Changed from 70% */
+  max-width: 320px; /* Changed from 300px */
+  height: calc(100vh - 4rem);
+  background-color: rgba(20, 20, 20, 0.95); /* Dark, semi-transparent background */
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 35; /* Below header, but above content */
+}
+
+.mobile-menu-panel.is-open {
+  transform: translateX(0);
+}
+
+.mobile-menu-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Added */
+  gap: 1.5rem;
+}
+
+.mobile-menu-panel a {
+  color: #E5E7EB; /* Changed from #f0f0f0 */
+  text-decoration: none;
+  font-size: 1.25rem; /* Changed from 1.5rem */
+  font-weight: 500;
+  transition: color 0.3s ease; /* Added transition for hover */
+}
+
+.mobile-menu-panel a:hover {
+  color: #6EE7B7; /* Added hover color */
+}
